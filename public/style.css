@@ -83,10 +83,6 @@
   display: none;
 }
 
-.background_red {
-  background-color: red;
-}
-
 #video-grid {
   display: flex;
   justify-content: center;
@@ -101,6 +97,10 @@ video {
   margin: 1rem;
   width: 420px;
   object-fit: cover;
+}
+
+.bg-red {
+  background-color: tomato;
 }
 
 @media(max-width: 650px) {

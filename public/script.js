@@ -13,34 +13,28 @@ myVideo.muted = true;
 let myStream;
 navigator.mediaDevices.getUserMedia({
   audio: true,
-  video: true,
+  video: false,
 })
 .then((stream)=>{
   myStream = stream;
-  addStream(myVideo, stream);
-  socket.on("user-connected", (userId) => {
-    console.log("user connected")
-    connectToNewUser(userId, stream);
-  });
+  addStream(myVideo, stream)
+
+  socket.on("userJoined", (userId) => {
+    const call = peer.call(userId, stream);
+    const video = document.createElement("video");
+    call.on("stream", (userVideoStream) => {
+      addStream(video, userVideoStream);
+    });
+  })
+
   peer.on("call", (call) => {
-    console.log("Call");
     call.answer(stream);
     const video = document.createElement("video");
     call.on("stream", (userVideoStream) => {
-      console.log("stream")
       addStream(video, userVideoStream);
     });
   });
 });
-
-function connectToNewUser(userId, stream) {
-  console.log("connecting to new user");
-  const call = peer.call(userId, stream);
-  const video = document.createElement("video");
-  call.on("stream", (userVideoStream) => {
-    addStream(video, userVideoStream);
-  });
-}
 
 function addStream(video, stream) {
   video.srcObject = stream;
@@ -75,33 +69,18 @@ $(function(){
     }
   });
 
-  $("#mute_audio").click(function() {
+  $("#mute").click(function () {
     const enabled = myStream.getAudioTracks()[0].enabled;
     if (enabled) {
       myStream.getAudioTracks()[0].enabled = false;
       html = `<i class="fa fa-microphone-slash"></i>`;
-      $("#mute_audio").toggleClass("background_red");
-      $("#mute_audio").html(html)
+      $("#mute").toggleClass("bg-red");
+      $("#mute").html(html);
     } else {
       myStream.getAudioTracks()[0].enabled = true;
       html = `<i class="fa fa-microphone"></i>`;
-      $("#mute_audio").toggleClass("background_red");
-      $("#mute_audio").html(html);
-    }
-  })
-
-  $("#stop_video").click(function () {
-    const enabled = myStream.getVideoTracks()[0].enabled;
-    if (enabled) {
-      myStream.getVideoTracks()[0].enabled = false;
-      html = `<i class="fa fa-video-slash"></i>`;
-      $("#stop_video").toggleClass("background_red");
-      $("#stop_video").html(html);
-    } else {
-      myStream.getVideoTracks()[0].enabled = true;
-      html = `<i class="fa fa-video"></i>`;
-      $("#stop_video").toggleClass("background_red");
-      $("#stop_video").html(html);
+      $("#mute").toggleClass("bg-red");
+      $("#mute").html(html);
     }
   });
 
