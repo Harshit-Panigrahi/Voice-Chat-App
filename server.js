@@ -12,7 +12,6 @@ const { ExpressPeerServer } = require("peer");
 const peerServer = ExpressPeerServer(server, { debug: true });
 app.use("/peerjs", peerServer);
 
-
 app.get("/", (req, res) => {
   res.redirect(`/${uuidv4()}`);
 })
@@ -24,6 +23,7 @@ app.get("/:room", (req, res) => {
 io.on("connection", (socket) => {
   socket.on("join-room", (roomId, userId, username) => {
     socket.join(roomId)
+    io.to(roomId).emit("userJoined", userId);
     socket.on("message", (msg) => {
       io.to(roomId).emit("createMessage", msg, username);
     })

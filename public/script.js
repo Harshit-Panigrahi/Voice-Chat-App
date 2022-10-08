@@ -14,9 +14,26 @@ let myStream;
 navigator.mediaDevices.getUserMedia({
   audio: true,
   video: false,
-}).then((stream)=>{
+})
+.then((stream)=>{
   myStream = stream;
   addStream(myVideo, stream)
+
+  socket.on("userJoined", (userId) => {
+    const call = peer.call(userId, stream);
+    const video = document.createElement("video");
+    call.on("stream", (userVideoStream) => {
+      addStream(video, userVideoStream);
+    });
+  })
+
+  peer.on("call", (call) => {
+    call.answer(stream);
+    const video = document.createElement("video");
+    call.on("stream", (userVideoStream) => {
+      addStream(video, userVideoStream);
+    });
+  });
 });
 
 function addStream(video, stream) {
