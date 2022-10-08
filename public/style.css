@@ -83,6 +83,10 @@
   display: none;
 }
 
+.background_red {
+  background-color: red;
+}
+
 #video-grid {
   display: flex;
   justify-content: center;
